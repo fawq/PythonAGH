@@ -173,10 +173,10 @@ def initialize(screen, palette, points, squares, rectangles, polygons, circles):
 def draw(screen, figures, path):
     fig, ax = plt.subplots()
 
-    ax.set_facecolor(screen.bg_color)
+    ax.set_facecolor(screen.bg_color) # Set background color
 
-    ax.set_xlim((0, screen.width))
-    ax.set_ylim((0, screen.height))
+    ax.set_xlim((0, screen.width)) # Set width of screen
+    ax.set_ylim((0, screen.height)) # Set height of screen
 
     for i in figures:
         if isinstance(i, Polygon):
@@ -190,11 +190,11 @@ def draw(screen, figures, path):
         else:
             ax.add_artist(plt.Rectangle([i.x, i.y], 1, 1, color=i.color))
 
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
-    plt.show()
+    ax.axes.get_xaxis().set_visible(False) # Set xaxis invisible 
+    ax.axes.get_yaxis().set_visible(False) # Set yaxis invisible
+    plt.show() # Show figures on the background
 
-    if path is not None:
+    if path is not None: # Save to file if path exist
         fig.savefig(path)
 
 
