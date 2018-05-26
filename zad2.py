@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import sys
+import matplotlib.transforms as tran
 
 
 # Main class of all figures
@@ -170,13 +171,21 @@ def initialize(screen, palette, points, squares, rectangles, polygons, circles):
 
 
 # Function to draw all figures, screen and save to file
-def draw(screen, figures, path):
+def draw(screen, figures, path, mydpi):
     fig, ax = plt.subplots()
 
-    ax.set_facecolor(screen.bg_color) # Set background color
+    ax.set_xlim((0, screen.width))  # Set width of screen
+    ax.set_ylim((0, screen.height))  # Set height of screen
 
-    ax.set_xlim((0, screen.width)) # Set width of screen
-    ax.set_ylim((0, screen.height)) # Set height of screen
+    ax.axes.get_xaxis().set_visible(False)  # Set xaxis invisible
+    ax.axes.get_yaxis().set_visible(False)  # Set yaxis invisible
+
+    ax.spines['top'].set_visible(False)  # Set top invisible
+    ax.spines['right'].set_visible(False)  # Set right invisible
+    ax.spines['bottom'].set_visible(False)  # Set bottom invisible
+    ax.spines['left'].set_visible(False)  # Set left invisible
+
+    ax.set_facecolor(screen.bg_color)  # Set background color
 
     for i in figures:
         if isinstance(i, Polygon):
@@ -190,17 +199,23 @@ def draw(screen, figures, path):
         else:
             ax.add_artist(plt.Rectangle([i.x, i.y], 1, 1, color=i.color))
 
-    ax.axes.get_xaxis().set_visible(False) # Set xaxis invisible 
-    ax.axes.get_yaxis().set_visible(False) # Set yaxis invisible
-    plt.show() # Show figures on the background
+    plt.show()  # Show figures on the background
 
-    if path is not None: # Save to file if path exist
-        fig.savefig(path)
+    if path is not None:  # Save to file if path exist
+        fig.set_size_inches(screen.width / float(fig.get_dpi()),
+                            screen.height / float(fig.get_dpi()))  # Set size of fig to original size
+        fig.subplots_adjust(
+            bottom=0)  # In fig erase "white-spaces", "white board" (Problem with saving image with white frame)
+        fig.subplots_adjust(top=1)
+        fig.subplots_adjust(right=1)
+        fig.subplots_adjust(left=0)
+        fig.savefig(path, dpi=fig.get_dpi() * mydpi)  # Save file
 
 
 # Main function which parse argument from the command line
 # (first argument is path to data, next with "-o" is path to save image)
-def main():
+# mydpi is optional and can be increased to better quality of image
+def main(mydpi=1):
     if (len(sys.argv) == 1):
         print("Blad argumentow")
         return
@@ -213,11 +228,11 @@ def main():
     index = 0
     for i in args:
         if i == "-o":
-            draw(screen, figures, args[index + 1])
+            draw(screen, figures, args[index + 1], mydpi)
             return
         index += 1
 
-    draw(screen, figures, None)
+    draw(screen, figures, None, mydpi)
 
 
 if __name__ == "__main__":
