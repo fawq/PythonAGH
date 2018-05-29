@@ -199,8 +199,6 @@ def draw(screen, figures, path, mydpi):
         else:
             ax.add_artist(plt.Rectangle([i.x, i.y], 1, 1, color=i.color))
 
-    plt.show()  # Show figures on the background
-
     if path is not None:  # Save to file if path exist
         fig.set_size_inches(screen.width / float(fig.get_dpi()),
                             screen.height / float(fig.get_dpi()))  # Set size of fig to original size
@@ -210,6 +208,8 @@ def draw(screen, figures, path, mydpi):
         fig.subplots_adjust(right=1)
         fig.subplots_adjust(left=0)
         fig.savefig(path, dpi=fig.get_dpi() * mydpi)  # Save file
+
+    plt.show()  # Show figures on the background
 
 
 # Main function which parse argument from the command line
@@ -226,13 +226,15 @@ def main(mydpi=1):
     screen, figures = initialize(screen, palette, points, squares, rectangles, polygons, circles)
 
     index = 0
+    newpath = None
     for i in args:
         if i == "-o":
-            draw(screen, figures, args[index + 1], mydpi)
-            return
+            newpath = args[index+1]
+        elif i== "-d":
+            mydpi = int(args[index+1])
         index += 1
 
-    draw(screen, figures, None, mydpi)
+    draw(screen, figures, newpath, mydpi)
 
 
 if __name__ == "__main__":
